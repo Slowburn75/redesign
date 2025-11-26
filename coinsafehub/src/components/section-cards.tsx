@@ -102,7 +102,7 @@ export function SectionCards() {
   useEffect(() => {
     fetchAccountSummary()
 
-    // Auto-refresh every 5 minutes
+    // Auto-refresh every five minutes
     const interval = setInterval(() => {
       fetchAccountSummary()
     }, 5 * 60 * 1000)
