@@ -2,9 +2,17 @@
   "name": "coinsafehub",
   "version": "0.1.0",
   "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "scripts": {
     "dev": "next dev --webpack",
+    "dev:all": "bun run --parallel dev dev:server",
+    "dev:server": "cd packages/server && bun run dev",
     "build": "next build --webpack",
+    "build:all": "bun run build && cd packages/server && bun run build",
     "start": "next start",
     "lint": "eslint"
   },

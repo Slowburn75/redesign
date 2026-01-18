@@ -99,7 +99,8 @@ export function LoginForm({
     setIsLoading(true)
 
     try {
-      const response = await fetch('https://server.coinsafehub.com/api/auth/login', {
+      // TODO: Implement backend endpoint for login
+      const response = await fetch('', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
