@@ -127,7 +127,8 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
     setSuccess('')
 
     try {
-      const response = await fetch(`https://server.coinsafehub.com/api/auth/verify_email`, {
+      // TODO: Implement backend endpoint for email verification
+      const response = await fetch(``, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

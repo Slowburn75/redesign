@@ -64,7 +64,8 @@ export function SectionCards() {
         return
       }
 
-      const response = await fetch(`https://server.coinsafehub.com/api/trans/account_summary`, {
+      // TODO: Implement backend endpoint for account summary
+      const response = await fetch(``, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

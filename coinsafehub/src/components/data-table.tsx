@@ -250,8 +250,9 @@ export function TransactionHistoryTable() {
         ...(searchQuery && { search: searchQuery }),
       })
 
+      // TODO: Implement backend endpoint for fetching transactions
       const response = await fetch(
-        `https://server.coinsafehub.com/api/trans/transactions`,
+        ``,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -262,7 +263,7 @@ export function TransactionHistoryTable() {
 
       if (response.status === 401) {
         localStorage.removeItem('authToken')
-        router.push('/login')
+        router.push('/')
         return
       }
 
@@ -295,9 +296,10 @@ export function TransactionHistoryTable() {
 
   const handleExport = async () => {
     try {
+      // TODO: Implement backend endpoint for exporting transactions
       const token = localStorage.getItem('authToken')
       const response = await fetch(
-        `https://server.coinsafehub.com/api/trans/transactions`,
+        ``,
         {
           headers: {
             'Authorization': `Bearer ${token}`,

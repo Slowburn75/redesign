@@ -195,7 +195,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`https://server.coinsafehub.com/api/auth/register`, {
+      // TODO: Implement backend endpoint for registration
+      const response = await fetch(``, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

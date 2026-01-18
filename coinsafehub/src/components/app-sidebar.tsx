@@ -56,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton asChild>
               <Link href="/" className="flex items-center space-x-2">
                 <span className="text-lg font-semibold text-primary">
-                  CoinSafeHub
+                 kowope
                 </span>
               </Link>
             </SidebarMenuButton>

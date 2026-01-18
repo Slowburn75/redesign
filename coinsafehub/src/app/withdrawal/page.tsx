@@ -4,29 +4,26 @@ import { useState } from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { DepositAmountStep } from '@/components/deposit-amount-step'
-import { DepositMethodStep, PaymentMethod } from '@/components/deposit-method-step'
-import { DepositPaymentStep } from '@/components/deposit-payment-step'
-import { DepositUploadStep } from '@/components/deposit-upload-step'
-import { DepositConfirmationStep } from '@/components/deposit-confirmation-step'
-import { DepositSummaryCard } from '@/components/deposit-summary-card'
-import { DepositProgressStepper, DepositStep } from '@/components/deposit-progress-stepper'
+import { WithdrawalAmountStep } from '@/components/withdrawal-amount-step'
+import { WithdrawalMethodStep, WithdrawalMethod } from '@/components/withdrawal-method-step'
+import { WithdrawalAddressStep } from '@/components/withdrawal-address-step'
+import { WithdrawalConfirmationStep } from '@/components/withdrawal-confirmation-step'
+import { WithdrawalSummaryCard } from '@/components/withdrawal-summary-card'
+import { WithdrawalProgressStepper, WithdrawalStep } from '@/components/withdrawal-progress-stepper'
 
-export default function DepositPage() {
-  const [currentStep, setCurrentStep] = useState<DepositStep>('amount')
+export default function WithdrawalPage() {
+  const [currentStep, setCurrentStep] = useState<WithdrawalStep>('amount')
   const [amount, setAmount] = useState('')
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null)
+  const [selectedMethod, setSelectedMethod] = useState<WithdrawalMethod | null>(null)
   const [selectedNetwork, setSelectedNetwork] = useState('')
-  const [transactionHash, setTransactionHash] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [notes, setNotes] = useState('')
-  const [depositReference, setDepositReference] = useState('')
+  const [withdrawalAddress, setWithdrawalAddress] = useState('')
+  const [withdrawalReference, setWithdrawalReference] = useState('')
 
   const handleAmountContinue = () => {
     setCurrentStep('method')
   }
 
-  const handleMethodSelect = (methodId: string, method: PaymentMethod) => {
+  const handleMethodSelect = (methodId: string, method: WithdrawalMethod) => {
     setSelectedMethod(method)
     
     // For crypto, select default network if available
@@ -34,70 +31,55 @@ export default function DepositPage() {
       setSelectedNetwork(method.networks[0])
     }
     
-    setCurrentStep('payment')
+    setCurrentStep('address')
   }
 
   const handleNetworkChange = (network: string) => {
     setSelectedNetwork(network)
   }
 
-  const handlePaymentContinue = () => {
-    setCurrentStep('upload')
-  }
-
-  const handleUploadSubmit = async () => {
-    // Submit deposit to API
+  const handleAddressSubmit = async () => {
+    // Submit withdrawal to API
     try {
       const token = localStorage.getItem('authToken')
-      const formData = new FormData()
       
-      formData.append('amount', amount)
-      formData.append('payment_method', selectedMethod!.name) // Send method name
-      formData.append('network', selectedNetwork || selectedMethod!.name)
-      
-      if (transactionHash) {
-        formData.append('transaction_hash', transactionHash)
-      }
-      
-      if (uploadedFile) {
-        formData.append('receipt', uploadedFile)
-      }
-      
-      if (notes) {
-        formData.append('notes', notes)
-      }
-
-      // TODO: Implement backend endpoint for deposit
+      // TODO: Implement backend endpoint for withdrawal
       const response = await fetch(
         '',
         {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: formData,
+          body: JSON.stringify({
+            amount,
+            withdrawal_method: selectedMethod!.name,
+            network: selectedNetwork || selectedMethod!.name,
+            withdrawal_address: withdrawalAddress,
+          }),
         }
       )
 
       const data = await response.json()
       
       if (response.ok) {
-        setDepositReference(data.reference || data.transaction_id || data.id || `DEP-${Date.now()}`)
+        setWithdrawalReference(data.reference || data.transaction_id || data.id || `WTH-${Date.now()}`)
         setCurrentStep('confirmation')
       } else {
-        throw new Error(data.message || 'Failed to submit deposit')
+        throw new Error(data.message || 'Failed to submit withdrawal')
       }
     } catch (error) {
-      console.error('Deposit submission error:', error)
+      console.error('Withdrawal submission error:', error)
       // Show error to user
-      alert('Failed to submit deposit. Please try again.')
+      alert('Failed to submit withdrawal. Please try again.')
       throw error
     }
   }
 
-  const handleStepClick = (step: DepositStep) => {
+  const handleStepClick = (step: WithdrawalStep) => {
     // Allow navigation to previous steps only
-    const stepOrder: DepositStep[] = ['amount', 'method', 'payment', 'upload', 'confirmation']
+    const stepOrder: WithdrawalStep[] = ['amount', 'method', 'address', 'confirmation']
     const currentIndex = stepOrder.indexOf(currentStep)
     const targetIndex = stepOrder.indexOf(step)
     
@@ -114,19 +96,13 @@ export default function DepositPage() {
     setCurrentStep('method')
   }
 
-  const handleBackToPayment = () => {
-    setCurrentStep('payment')
-  }
-
-  const resetDeposit = () => {
+  const resetWithdrawal = () => {
     setCurrentStep('amount')
     setAmount('')
     setSelectedMethod(null)
     setSelectedNetwork('')
-    setTransactionHash('')
-    setUploadedFile(null)
-    setNotes('')
-    setDepositReference('')
+    setWithdrawalAddress('')
+    setWithdrawalReference('')
   }
 
   return (
@@ -142,7 +118,7 @@ export default function DepositPage() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col pt-11">
             {/* Progress Stepper */}
-            <DepositProgressStepper
+            <WithdrawalProgressStepper
               currentStep={currentStep}
               onStepClick={handleStepClick}
               allowNavigation={true}
@@ -154,7 +130,7 @@ export default function DepositPage() {
               <div className="flex-1 min-w-0">
                 {/* Step 1: Amount */}
                 {currentStep === 'amount' && (
-                  <DepositAmountStep
+                  <WithdrawalAmountStep
                     amount={amount}
                     onAmountChange={setAmount}
                     onContinue={handleAmountContinue}
@@ -165,7 +141,7 @@ export default function DepositPage() {
 
                 {/* Step 2: Method Selection */}
                 {currentStep === 'method' && (
-                  <DepositMethodStep
+                  <WithdrawalMethodStep
                     amount={amount}
                     selectedMethod={selectedMethod?.id || null}
                     onMethodSelect={handleMethodSelect}
@@ -173,41 +149,28 @@ export default function DepositPage() {
                   />
                 )}
 
-                {/* Step 3: Payment Instructions */}
-                {currentStep === 'payment' && selectedMethod && (
-                  <DepositPaymentStep
+                {/* Step 3: Withdrawal Address */}
+                {currentStep === 'address' && selectedMethod && (
+                  <WithdrawalAddressStep
                     amount={amount}
                     method={selectedMethod}
                     selectedNetwork={selectedNetwork}
                     onNetworkChange={handleNetworkChange}
-                    onContinue={handlePaymentContinue}
+                    withdrawalAddress={withdrawalAddress}
+                    onAddressChange={setWithdrawalAddress}
+                    onSubmit={handleAddressSubmit}
                     onBack={handleBackToMethod}
                   />
                 )}
 
-                {/* Step 4: Upload Receipt */}
-                {currentStep === 'upload' && selectedMethod && (
-                  <DepositUploadStep
-                    amount={amount}
-                    method={selectedMethod}
-                    transactionHash={transactionHash}
-                    onTransactionHashChange={setTransactionHash}
-                    uploadedFile={uploadedFile}
-                    onFileUpload={setUploadedFile}
-                    notes={notes}
-                    onNotesChange={setNotes}
-                    onSubmit={handleUploadSubmit}
-                    onBack={handleBackToPayment}
-                  />
-                )}
-
-                {/* Step 5: Confirmation */}
+                {/* Step 4: Confirmation */}
                 {currentStep === 'confirmation' && selectedMethod && (
-                  <DepositConfirmationStep
+                  <WithdrawalConfirmationStep
                     amount={amount}
                     method={selectedMethod}
-                    depositReference={depositReference}
-                    onReset={resetDeposit}
+                    withdrawalAddress={withdrawalAddress}
+                    withdrawalReference={withdrawalReference}
+                    onReset={resetWithdrawal}
                   />
                 )}
               </div>
@@ -215,7 +178,7 @@ export default function DepositPage() {
               {/* Sticky Summary Card - Hidden on confirmation step and mobile */}
               {currentStep !== 'confirmation' && (
                 <div className="hidden xl:block w-80 flex-shrink-0">
-                  <DepositSummaryCard
+                  <WithdrawalSummaryCard
                     amount={amount}
                     method={selectedMethod}
                   />
